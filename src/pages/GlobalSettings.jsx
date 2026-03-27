@@ -102,7 +102,6 @@ function BrandingTab() {
             <Icon name="id badge" />
             <Header.Content>
               Application Identity
-              <Header.Subheader>Name and logos used across the platform</Header.Subheader>
             </Header.Content>
           </Header>
 
@@ -114,7 +113,7 @@ function BrandingTab() {
                 onChange={(e, { value }) => setName(value)}
                 placeholder="Enter application name"
               />
-              <p className="field-hint">Shows in workflows, transactional emails, and SMS messages.</p>
+              <p className="field-hint">Used in workflows, emails, and SMS.</p>
               {!name.trim() && <Label basic color="red" pointing>Name is required</Label>}
             </Form.Field>
 
@@ -124,7 +123,6 @@ function BrandingTab() {
                 <span className="file-name-text">Resolve-Logo-Full-Color-PMS-Values-CMYK.png</span>
                 <Button color="red" icon size="mini"><Icon name="trash" /></Button>
               </div>
-              <p className="field-hint">Used for branding across the whole application.</p>
             </Form.Field>
 
             <Form.Field>
@@ -133,7 +131,6 @@ function BrandingTab() {
                 <Icon name="folder" />
                 Select a file...
               </Button>
-              <p className="field-hint">Displayed on the login screen and workflow pages with image backgrounds.</p>
             </Form.Field>
 
             <Form.Field>
@@ -142,7 +139,6 @@ function BrandingTab() {
                 <Icon name="folder" />
                 Select a file...
               </Button>
-              <p className="field-hint">Shows on all login and onboarding pages when outside the main application.</p>
             </Form.Field>
           </Form>
         </Segment>
@@ -153,7 +149,6 @@ function BrandingTab() {
             <Icon name="paint brush" />
             <Header.Content>
               Colors
-              <Header.Subheader>Theme colors for the application UI</Header.Subheader>
             </Header.Content>
           </Header>
 
@@ -171,7 +166,6 @@ function BrandingTab() {
                   placeholder="#FFFFFF"
                 />
               </div>
-              <p className="field-hint">Applied throughout the user interface.</p>
               {primaryColor && !isValidHex(primaryColor) && (
                 <Label basic color="red" pointing>Enter a valid hex color (e.g. #FF5500)</Label>
               )}
@@ -196,9 +190,7 @@ function BrandingTab() {
                   />
                 </div>
               )}
-              <p className="field-hint">
-                Header color for the web application. If not specified, the primary color above will be used.
-              </p>
+              <p className="field-hint">Falls back to primary color if not set.</p>
               {customizeHeader && headerColor && !isValidHex(headerColor) && (
                 <Label basic color="red" pointing>Enter a valid hex color</Label>
               )}
@@ -212,7 +204,6 @@ function BrandingTab() {
             <Icon name="theme" />
             <Header.Content>
               Modern Barista Theme
-              <Header.Subheader>Color theme for the Modern Barista experience</Header.Subheader>
             </Header.Content>
           </Header>
 
@@ -225,9 +216,7 @@ function BrandingTab() {
                 checked={baristaTheme === 'default'}
                 onChange={() => setBaristaTheme('default')}
               />
-              <p className="field-hint radio-hint">
-                Use primary color — your legacy and modern Barista color will be the same.
-              </p>
+              <p className="field-hint radio-hint">Legacy and modern Barista will share the same color.</p>
             </Form.Field>
 
             <Form.Field>
@@ -238,9 +227,7 @@ function BrandingTab() {
                 checked={baristaTheme === 'custom'}
                 onChange={() => setBaristaTheme('custom')}
               />
-              <p className="field-hint radio-hint">
-                Using this setting does not impact the legacy experience, and modern Barista will have a different color theme.
-              </p>
+              <p className="field-hint radio-hint">Does not affect legacy. Modern Barista gets its own theme.</p>
               {baristaTheme === 'custom' && (
                 <div className="color-field" style={{ marginTop: 8 }}>
                   <div
@@ -264,7 +251,6 @@ function BrandingTab() {
             <Icon name="robot" />
             <Header.Content>
               Bot Identity &amp; Branding
-              <Header.Subheader>Customizations for web and mobile applications</Header.Subheader>
             </Header.Content>
           </Header>
 
@@ -300,7 +286,6 @@ function BrandingTab() {
                 value={chatBotSvg}
                 onChange={(e, { value }) => setChatBotSvg(value)}
               />
-              <p className="field-hint">Icon/Logo must be in SVG format. Paste in SVG code into text box above.</p>
               {chatBotSvg && !chatBotSvg.trim().startsWith('<svg') && (
                 <Label basic color="red" pointing>SVG code should start with {'<svg'}</Label>
               )}
@@ -312,7 +297,6 @@ function BrandingTab() {
                 <Icon name="folder" />
                 Select a file...
               </Button>
-              <p className="field-hint">Icon must be in PNG format.</p>
             </Form.Field>
 
             <Form.Field>
