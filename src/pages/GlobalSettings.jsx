@@ -160,11 +160,26 @@ function BrandingTab() {
   const effectivePrimary = isValidHex(primaryColor) ? primaryColor : '#FFFFFF'
   const effectiveBarista = baristaTheme === 'custom' && isValidHex(customThemeColor) ? customThemeColor : effectivePrimary
 
+  const sections = [
+    { id: 'identity', label: 'Application Identity' },
+    { id: 'colors', label: 'Colors & Theme' },
+    { id: 'bot', label: 'Bot Identity' },
+  ]
+
   return (
-    <div className="branding-sections">
+    <div className="branding-page">
+      <div className="branding-nav">
+        <Menu vertical secondary size="small" className="section-nav">
+          {sections.map(s => (
+            <Menu.Item key={s.id} as="a" href={`#${s.id}`} content={s.label} />
+          ))}
+        </Menu>
+      </div>
+
+      <div className="branding-sections">
 
       {/* ---- Section 1: Application Identity ---- */}
-      <Segment>
+      <Segment id="identity">
         <Header as="h3" dividing>Application Identity</Header>
         <div className="section-row">
           <div className="section-form">
@@ -221,7 +236,7 @@ function BrandingTab() {
       </Segment>
 
       {/* ---- Section 2: Colors & Theme ---- */}
-      <Segment>
+      <Segment id="colors">
         <Header as="h3" dividing>Colors &amp; Theme</Header>
         <div className="section-row">
           <div className="section-form">
@@ -351,7 +366,7 @@ function BrandingTab() {
       </Segment>
 
       {/* ---- Section 3: Bot Identity & Branding ---- */}
-      <Segment>
+      <Segment id="bot">
         <Header as="h3" dividing>Bot Identity &amp; Branding</Header>
         <Message info size="small">
           <Icon name="info circle" />
@@ -462,6 +477,8 @@ function BrandingTab() {
           </div>
         </div>
       </Segment>
+
+      </div> {/* end branding-sections */}
 
       {/* Sticky save bar */}
       <div className={`save-bar ${isDirty ? 'visible' : ''}`}>
