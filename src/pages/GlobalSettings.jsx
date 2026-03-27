@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   Menu, Header, Form, Input, Button, Icon, Segment, Checkbox,
   Radio, Message, TextArea, Divider, Popup, Label
@@ -50,6 +50,60 @@ const INITIAL_STATE = {
   customThemeColor: '#1B1C1D',
   chatBotName: 'Hocus',
   chatBotSvg: '',
+  appLogo: { name: 'Resolve-Logo-Full-Color-PMS-Values-CMYK.png', url: null },
+  loginLogo: null,
+  bgImage: null,
+  widgetIcon: null,
+  favicon: null,
+}
+
+function FileUploadField({ label, optional, file, accept, onFileChange, onRemove }) {
+  const inputRef = useRef(null)
+
+  const handleClick = () => inputRef.current?.click()
+  const handleChange = (e) => {
+    const f = e.target.files?.[0]
+    if (f) {
+      const url = URL.createObjectURL(f)
+      onFileChange({ name: f.name, url })
+    }
+    e.target.value = ''
+  }
+
+  return (
+    <Form.Field>
+      <label>{label} {optional && <span className="optional-tag">(Optional)</span>}</label>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept || 'image/*'}
+        style={{ display: 'none' }}
+        onChange={handleChange}
+      />
+      {file ? (
+        <div className="file-uploaded">
+          {file.url && <img src={file.url} alt="" className="file-thumb" />}
+          <span className="file-name-text">{file.name}</span>
+          <Button color="red" icon size="mini" onClick={onRemove}><Icon name="trash" /></Button>
+          <Button basic icon size="mini" onClick={handleClick}><Icon name="exchange" /></Button>
+        </div>
+      ) : (
+        <Input
+          labelPosition="left"
+          placeholder="Select a file..."
+          readOnly
+          fluid
+          onClick={handleClick}
+          style={{ cursor: 'pointer' }}
+        >
+          <Label basic as="a" onClick={handleClick}>
+            <Icon name="folder" style={{ margin: 0 }} />
+          </Label>
+          <input />
+        </Input>
+      )}
+    </Form.Field>
+  )
 }
 
 function BrandingTab() {
@@ -61,6 +115,11 @@ function BrandingTab() {
   const [customThemeColor, setCustomThemeColor] = useState(INITIAL_STATE.customThemeColor)
   const [chatBotName, setChatBotName] = useState(INITIAL_STATE.chatBotName)
   const [chatBotSvg, setChatBotSvg] = useState(INITIAL_STATE.chatBotSvg)
+  const [appLogo, setAppLogo] = useState(INITIAL_STATE.appLogo)
+  const [loginLogo, setLoginLogo] = useState(INITIAL_STATE.loginLogo)
+  const [bgImage, setBgImage] = useState(INITIAL_STATE.bgImage)
+  const [widgetIcon, setWidgetIcon] = useState(INITIAL_STATE.widgetIcon)
+  const [favicon, setFavicon] = useState(INITIAL_STATE.favicon)
   const [saved, setSaved] = useState(INITIAL_STATE)
 
   const isDirty = name !== saved.name ||
@@ -70,10 +129,15 @@ function BrandingTab() {
     baristaTheme !== saved.baristaTheme ||
     customThemeColor !== saved.customThemeColor ||
     chatBotName !== saved.chatBotName ||
-    chatBotSvg !== saved.chatBotSvg
+    chatBotSvg !== saved.chatBotSvg ||
+    appLogo !== saved.appLogo ||
+    loginLogo !== saved.loginLogo ||
+    bgImage !== saved.bgImage ||
+    widgetIcon !== saved.widgetIcon ||
+    favicon !== saved.favicon
 
   const handleSave = () => {
-    setSaved({ name, primaryColor, customizeHeader, headerColor, baristaTheme, customThemeColor, chatBotName, chatBotSvg })
+    setSaved({ name, primaryColor, customizeHeader, headerColor, baristaTheme, customThemeColor, chatBotName, chatBotSvg, appLogo, loginLogo, bgImage, widgetIcon, favicon })
   }
 
   const handleDiscard = () => {
@@ -85,6 +149,11 @@ function BrandingTab() {
     setCustomThemeColor(saved.customThemeColor)
     setChatBotName(saved.chatBotName)
     setChatBotSvg(saved.chatBotSvg)
+    setAppLogo(saved.appLogo)
+    setLoginLogo(saved.loginLogo)
+    setBgImage(saved.bgImage)
+    setWidgetIcon(saved.widgetIcon)
+    setFavicon(saved.favicon)
   }
 
   const effectiveHeaderColor = customizeHeader && isValidHex(headerColor) ? headerColor : (isValidHex(primaryColor) ? primaryColor : '#000000')
@@ -112,33 +181,28 @@ function BrandingTab() {
               {!name.trim() && <Label basic color="red" pointing>Name is required</Label>}
             </Form.Field>
 
-            <Form.Field>
-              <label>Application Logo</label>
-              <div className="file-upload-row">
-                <span className="file-name-text">Resolve-Logo-Full-Color-PMS-Values-CMYK.png</span>
-                <Button color="red" icon size="mini"><Icon name="trash" /></Button>
-              </div>
-            </Form.Field>
+            <FileUploadField
+              label="Application Logo"
+              file={appLogo}
+              onFileChange={setAppLogo}
+              onRemove={() => setAppLogo(null)}
+            />
 
-            <Form.Field>
-              <label>Login Page Logo <span className="optional-tag">(Optional)</span></label>
-              <Input
-                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
-                placeholder="Select a file..."
-                readOnly
-                fluid
-              />
-            </Form.Field>
+            <FileUploadField
+              label="Login Page Logo"
+              optional
+              file={loginLogo}
+              onFileChange={setLoginLogo}
+              onRemove={() => setLoginLogo(null)}
+            />
 
-            <Form.Field>
-              <label>Background Image <span className="optional-tag">(Optional)</span></label>
-              <Input
-                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
-                placeholder="Select a file..."
-                readOnly
-                fluid
-              />
-            </Form.Field>
+            <FileUploadField
+              label="Background Image"
+              optional
+              file={bgImage}
+              onFileChange={setBgImage}
+              onRemove={() => setBgImage(null)}
+            />
           </Form>
         </Segment>
 
@@ -275,25 +339,22 @@ function BrandingTab() {
               )}
             </Form.Field>
 
-            <Form.Field>
-              <label>Widget Icon <span className="optional-tag">(PNG)</span></label>
-              <Input
-                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
-                placeholder="Select a file..."
-                readOnly
-                fluid
-              />
-            </Form.Field>
+            <FileUploadField
+              label="Widget Icon"
+              optional
+              accept="image/png"
+              file={widgetIcon}
+              onFileChange={setWidgetIcon}
+              onRemove={() => setWidgetIcon(null)}
+            />
 
-            <Form.Field>
-              <label>Favicon</label>
-              <Input
-                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
-                placeholder="Select a file..."
-                readOnly
-                fluid
-              />
-            </Form.Field>
+            <FileUploadField
+              label="Favicon"
+              file={favicon}
+              accept="image/x-icon,image/png"
+              onFileChange={setFavicon}
+              onRemove={() => setFavicon(null)}
+            />
           </Form>
         </Segment>
 
