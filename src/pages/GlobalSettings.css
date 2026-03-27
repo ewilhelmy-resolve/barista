@@ -1,5 +1,9 @@
 /* Branding sections — stacked vertically */
-.branding-sections > .ui.segment { margin-bottom: 24px; }
+.branding-sections > .ui.segment {
+  margin-bottom: 24px;
+  box-shadow: none;
+  border: 1px solid #e0e0e0;
+}
 
 /* Each section: form left, preview right */
 .section-row { display: flex; gap: 40px; align-items: flex-start; }
