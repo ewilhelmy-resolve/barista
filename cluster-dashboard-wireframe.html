@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cluster Dashboard - Wireframe</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; padding: 24px; background: #fff; color: #222; }
+
+    h1 { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
+
+    /* Dataset selector row */
+    .dataset-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 24px; }
+    .dataset-row label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; }
+    .dataset-row select {
+      width: 520px; padding: 8px 12px; font-size: 14px;
+      border: 1.5px solid #999; border-radius: 4px; background: #fff;
+    }
+    .btn {
+      padding: 8px 18px; font-size: 14px; font-weight: 600;
+      border: 1.5px solid #222; background: #fff; cursor: pointer; border-radius: 4px;
+    }
+    .btn:hover { background: #f0f0f0; }
+    .btn-dark { background: #222; color: #fff; }
+    .btn-dark:hover { background: #444; }
+    .icon-btn { padding: 8px 12px; font-size: 16px; }
+
+    .subtitle { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .subtitle .info { cursor: help; border: 1.5px solid #999; border-radius: 50%; display: inline-block; width: 18px; height: 18px; text-align: center; font-size: 12px; line-height: 17px; margin-left: 4px; color: #666; }
+
+    /* Main layout */
+    .main-layout { display: flex; flex-direction: column; gap: 20px; }
+    .treemap-area { width: 100%; }
+    .top-bar { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .top-bar .actions { display: flex; flex-direction: column; gap: 8px; }
+    .top-bar .actions .btn-row { display: flex; gap: 8px; }
+    .top-bar .actions .btn { font-size: 13px; padding: 8px 14px; text-align: center; }
+    .stats-row { display: flex; gap: 12px; flex: 1; }
+    .stats-row .stat-card { flex: 1; min-width: 140px; }
+
+    /* Treemap */
+    .treemap {
+      width: 100%; aspect-ratio: 1.6; border: 1.5px solid #ccc;
+      position: relative; overflow: hidden; background: #fafafa;
+    }
+    .tm-cell {
+      position: absolute; border: 1.5px solid #fff;
+      display: flex; flex-direction: column; padding: 4px 6px;
+      font-size: 11px; overflow: hidden; cursor: pointer;
+    }
+    .tm-cell:hover { opacity: 0.85; }
+    .tm-cell.selected { outline: 3px solid #222; outline-offset: -3px; opacity: 1; }
+    .tm-label { font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tm-count { font-weight: 700; font-size: 14px; margin-top: 2px; }
+    .tm-icon { display: inline-block; font-size: 11px; margin-left: 3px; }
+    .bg-yellow { background: #e8b829; }
+    .bg-red { background: #e06060; }
+    .bg-green { background: #6dbf6d; }
+
+    /* Legend */
+    .legend { margin-top: 16px; font-size: 12px; line-height: 2; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-swatch { width: 14px; height: 14px; display: inline-block; flex-shrink: 0; }
+    .legend .icon-legend { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+
+    .btn-full { width: 100%; }
+
+    /* View switcher */
+    .view-switcher { display: flex; gap: 0; margin-bottom: 20px; }
+    .view-tab {
+      padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1.5px solid #ccc; background: #f5f5f5; color: #666;
+    }
+    .view-tab:first-child { border-radius: 4px 0 0 4px; }
+    .view-tab:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+    .view-tab.active { background: #222; color: #fff; border-color: #222; }
+    .view-tab:not(.active):hover { background: #e8e8e8; }
+
+    /* Table view */
+    .table-view { width: 100%; }
+    .record-count { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #444; }
+    .pagination-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .pagination-row select { padding: 4px 8px; font-size: 13px; border: 1.5px solid #ccc; border-radius: 4px; }
+    .pagination-row .page-info { font-size: 13px; color: #555; display: flex; align-items: center; gap: 6px; }
+    .pagination-row .page-btn { padding: 4px 10px; border: 1.5px solid #ccc; background: #fff; cursor: pointer; border-radius: 4px; font-size: 14px; }
+    .pagination-row .page-btn:hover { background: #f0f0f0; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .data-table th {
+      text-align: left; padding: 10px 12px; font-weight: 600; font-size: 12px;
+      border-bottom: 2px solid #ddd; color: #444; white-space: nowrap;
+    }
+    .data-table th .sort-icon { color: #aaa; margin-left: 2px; }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+    .data-table tr:nth-child(even) { background: #f8f8f8; }
+    .data-table tr:hover { background: #f0f0f0; }
+    .check-green { color: #d4a017; font-size: 18px; }
+
+    .stat-card {
+      border: 1.5px solid #ddd; border-radius: 6px; padding: 16px; margin-bottom: 12px; text-align: center;
+    }
+    .stat-card .value { font-size: 32px; font-weight: 700; }
+    .stat-card .sublabel { font-size: 13px; color: #555; margin-top: 2px; }
+
+    /* Tooltip mock */
+    .tooltip-mock {
+      position: absolute; background: #fff; border: 1.5px solid #ccc; border-radius: 6px;
+      padding: 10px 14px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      pointer-events: none; z-index: 10;
+    }
+    .tooltip-mock strong { display: block; font-size: 13px; margin-bottom: 2px; }
+
+    /* Refresh tooltip */
+    .refresh-wrap { position: relative; display: inline-flex; }
+    .refresh-wrap .refresh-tooltip {
+      display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff; font-size: 12px; font-weight: 400; padding: 8px 12px;
+      border-radius: 6px; white-space: nowrap; z-index: 20; pointer-events: none;
+    }
+    .refresh-wrap .refresh-tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #333;
+    }
+    .refresh-wrap:hover .refresh-tooltip { display: block; }
+
+    /* Clear link */
+    .clear-link {
+      font-size: 13px; font-weight: 600; color: #555; cursor: pointer;
+      text-decoration: underline; background: none; border: none; padding: 8px 4px;
+    }
+    .clear-link:hover { color: #222; }
+
+    /* Controls row */
+    .controls-row { display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Cluster Dashboard</h1>
+
+  <!-- Dataset selector -->
+  <div class="dataset-row">
+    <div>
+      <label>Dataset</label>
+      <select>
+        <option>Krishant Test Dec - 2025-09-01 - 2025-12-04</option>
+      </select>
+    </div>
+    <button class="btn btn-dark">CREATE DATASET</button>
+    <button class="btn icon-btn">&#x2B07;</button>
+  </div>
+
+  <p class="subtitle">Krishant Test Dec - Mon Sep 01 2025 - Thu Dec 04 2025 <span class="info">i</span></p>
+
+  <!-- Main layout -->
+  <div class="main-layout">
+
+    <!-- Top bar: actions + metrics -->
+    <div class="top-bar">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="value" id="stat-tickets">1</div>
+          <div class="sublabel">Tickets Count</div>
+          <div style="font-size:11px;color:#999;margin-top:4px;" id="stat-context">Cursor</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-interactions">214</div>
+          <div class="sublabel">Interactions Count</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-outcome">61.61%</div>
+          <div class="sublabel">Outcome Percentage</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-deflection">87.85%</div>
+          <div class="sublabel">Deflection Percentage</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View switcher + actions row -->
+    <div class="controls-row">
+      <div class="view-switcher" style="margin-bottom:0;">
+        <button class="view-tab active" data-view="table" onclick="switchView('table')">Table</button>
+        <button class="view-tab" data-view="chart" onclick="switchView('chart')">Chart</button>
+      </div>
+      <div class="refresh-wrap">
+        <button class="btn" style="display:inline-flex;align-items:center;gap:6px;">
+          <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> REFRESH HEALTH
+        </button>
+        <span class="refresh-tooltip">This will resync on knowledge and may take some time</span>
+      </div>
+      <button class="clear-link">Clear</button>
+    </div>
+
+    <!-- Table view (default) -->
+    <div class="table-view" id="tableView">
+      <div class="pagination-row">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="record-count">4158 Records</span>
+          <select><option>25</option><option>50</option><option>100</option></select>
+          <span style="font-size:13px;color:#555;">per page (1-25)</span>
+        </div>
+        <div class="page-info">
+          Page <select><option>1</option></select> of 167
+          <button class="page-btn">&#8249;</button>
+          <button class="page-btn">&#8250;</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Interaction Text <span class="sort-icon">&#8597;</span></th>
+            <th>Translated Interaction Text <span class="sort-icon">&#8597;</span></th>
+            <th>Deflected <span class="sort-icon">&#8597;</span></th>
+            <th>Outcome <span class="sort-icon">&#8597;</span></th>
+            <th>Automation Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.0</td>
+            <td>I need to connect to VPN</td>
+            <td><span class="check-green">&#10004;</span></td>
+            <td>70</td>
+            <td></td>
+          </tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+          <tr><td></td><td></td><td></td><td>30</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Treemap area (chart view) -->
+    <div class="treemap-area" id="chartView" style="display:none;">
+      <div class="treemap" id="treemap">
+        <!-- Row 1 -->
+        <div class="tm-cell bg-yellow" style="left:0%;top:0%;width:14%;height:22%" data-tickets="3" data-interactions="180" data-outcome="55.20%" data-deflection="82.10%">
+          <span class="tm-label">topic_58</span>
+          <span class="tm-count">180 <span class="tm-icon" style="color:red;">&#9632;</span></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:14%;top:0%;width:18%;height:22%" data-tickets="0" data-interactions="82" data-outcome="68.30%" data-deflection="91.50%">
+          <span class="tm-label">Guest Wifi Access and Password</span>
+          <span class="tm-count">82 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:32%;top:0%;width:10%;height:22%" data-tickets="1" data-interactions="35" data-outcome="48.60%" data-deflection="74.30%">
+          <span class="tm-label">Apple Device Issues</span>
+          <span class="tm-count">35 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:42%;top:0%;width:12%;height:22%" data-tickets="2" data-interactions="78" data-outcome="59.00%" data-deflection="85.90%">
+          <span class="tm-label">Outlook and Teams Access Issues</span>
+          <span class="tm-count">78 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-green" style="left:54%;top:0%;width:4%;height:22%" data-tickets="0" data-interactions="8" data-outcome="87.50%" data-deflection="100.00%">
+          <span class="tm-label">40</span>
+          <span class="tm-count">8 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:58%;top:0%;width:18%;height:22%" data-tickets="1" data-interactions="128" data-outcome="64.10%" data-deflection="89.80%">
+          <span class="tm-label">Employee Policies and Procedures</span>
+          <span class="tm-count">128 &#9745;</span>
+        </div>
+
+        <!-- Right side red cells row 1 -->
+        <div class="tm-cell bg-red" style="left:76%;top:0%;width:8%;height:14%" data-tickets="4" data-interactions="8" data-outcome="25.00%" data-deflection="37.50%">
+          <span class="tm-label">Cisco Access</span>
+          <span class="tm-count">8 <span class="tm-icon" style="color:red;">&#9632;</span></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:84%;top:0%;width:16%;height:14%" data-tickets="2" data-interactions="12" data-outcome="33.30%" data-deflection="41.70%">
+          <span class="tm-label">Command Information</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:76%;top:14%;width:12%;height:10%" data-tickets="1" data-interactions="34" data-outcome="41.20%" data-deflection="58.80%">
+          <span class="tm-label">Technical and...</span>
+          <span class="tm-count">34 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:88%;top:14%;width:12%;height:10%" data-tickets="0" data-interactions="41" data-outcome="39.00%" data-deflection="53.70%">
+          <span class="tm-label">Google Drive Fo...</span>
+          <span class="tm-count">41 &#9745;</span>
+        </div>
+
+        <!-- Row 2 - large yellow blocks -->
+        <div class="tm-cell bg-yellow" style="left:0%;top:22%;width:28%;height:24%" data-tickets="0" data-interactions="198" data-outcome="72.20%" data-deflection="93.40%">
+          <span class="tm-label">Testing and ChatGPT Interactions</span>
+          <span class="tm-count">198 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:28%;top:22%;width:26%;height:24%" data-tickets="2" data-interactions="186" data-outcome="58.60%" data-deflection="84.40%">
+          <span class="tm-label">VPN Connection Issues and Access</span>
+          <span class="tm-count">186 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:54%;top:22%;width:22%;height:24%" data-tickets="0" data-interactions="150" data-outcome="66.00%" data-deflection="90.00%">
+          <span class="tm-label"></span>
+          <span class="tm-count"></span>
+        </div>
+
+        <!-- Small red cells right side row 2 -->
+        <div class="tm-cell bg-red" style="left:76%;top:24%;width:6%;height:12%" data-tickets="1" data-interactions="7" data-outcome="28.60%" data-deflection="42.90%">
+          <span class="tm-label">Automate...</span>
+          <span class="tm-count">7 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:82%;top:24%;width:6%;height:12%" data-tickets="0" data-interactions="7" data-outcome="14.30%" data-deflection="28.60%">
+          <span class="tm-label">Coffee Re...</span>
+          <span class="tm-count">7 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:88%;top:24%;width:6%;height:12%" data-tickets="1" data-interactions="3" data-outcome="33.30%" data-deflection="33.30%">
+          <span class="tm-label">Har...</span>
+          <span class="tm-count">3 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:94%;top:24%;width:6%;height:12%" data-tickets="0" data-interactions="2" data-outcome="0.00%" data-deflection="50.00%">
+          <span class="tm-label">H...</span>
+          <span class="tm-count">2</span>
+        </div>
+
+        <div class="tm-cell bg-red" style="left:76%;top:36%;width:6%;height:10%" data-tickets="2" data-interactions="5" data-outcome="20.00%" data-deflection="40.00%">
+          <span class="tm-label">Pol...</span>
+          <span class="tm-count">5</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:82%;top:36%;width:8%;height:10%" data-tickets="3" data-interactions="20" data-outcome="30.00%" data-deflection="45.00%">
+          <span class="tm-label">Zoom Background</span>
+          <span class="tm-count">20 <span style="color:red;">&#9632;</span></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:90%;top:36%;width:5%;height:10%" data-tickets="0" data-interactions="7" data-outcome="42.90%" data-deflection="57.10%">
+          <span class="tm-label">Conn...</span>
+          <span class="tm-count">7 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:95%;top:36%;width:5%;height:10%" data-tickets="1" data-interactions="3" data-outcome="33.30%" data-deflection="33.30%">
+          <span class="tm-label">D...</span>
+          <span class="tm-count">3</span>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="tm-cell bg-yellow" style="left:0%;top:46%;width:8%;height:14%" data-tickets="0" data-interactions="22" data-outcome="54.50%" data-deflection="77.30%">
+          <span class="tm-label">VPN Per...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:8%;top:46%;width:10%;height:14%" data-tickets="1" data-interactions="55" data-outcome="60.00%" data-deflection="85.50%">
+          <span class="tm-label">Ticket Status</span>
+          <span class="tm-count">55 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:18%;top:46%;width:10%;height:14%" data-tickets="0" data-interactions="41" data-outcome="73.20%" data-deflection="92.70%">
+          <span class="tm-label">Password Reset</span>
+          <span class="tm-count">41 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:28%;top:46%;width:14%;height:14%" data-tickets="1" data-interactions="41" data-outcome="56.10%" data-deflection="80.50%">
+          <span class="tm-label">WiFi and Wireless Connectivity</span>
+          <span class="tm-count">41 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:42%;top:46%;width:8%;height:14%" data-tickets="0" data-interactions="21" data-outcome="66.70%" data-deflection="90.50%">
+          <span class="tm-label">401k Program In...</span>
+          <span class="tm-count">21 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:50%;top:46%;width:18%;height:14%" data-tickets="2" data-interactions="67" data-outcome="52.20%" data-deflection="79.10%">
+          <span class="tm-label">Ticket Management and Creation Requests</span>
+          <span class="tm-count">67 &#9745;</span>
+        </div>
+
+        <!-- Right side red cells row 3 -->
+        <div class="tm-cell bg-red" style="left:76%;top:46%;width:5%;height:8%" data-tickets="1" data-interactions="4" data-outcome="25.00%" data-deflection="25.00%">
+          <span class="tm-label">Que...</span>
+          <span class="tm-count">4</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:81%;top:46%;width:5%;height:8%" data-tickets="0" data-interactions="6" data-outcome="33.30%" data-deflection="50.00%">
+          <span class="tm-label">Copilo...</span>
+          <span class="tm-count">6 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:86%;top:46%;width:5%;height:8%" data-tickets="1" data-interactions="7" data-outcome="28.60%" data-deflection="42.90%">
+          <span class="tm-label">Device...</span>
+          <span class="tm-count">7 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:91%;top:46%;width:4.5%;height:8%" data-tickets="0" data-interactions="3" data-outcome="33.30%" data-deflection="33.30%">
+          <span class="tm-label">En...</span>
+          <span class="tm-count">3</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:95.5%;top:46%;width:4.5%;height:8%" data-tickets="0" data-interactions="6" data-outcome="16.70%" data-deflection="50.00%">
+          <span class="tm-label">Keybo...</span>
+          <span class="tm-count">6 &#9745;</span>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="tm-cell bg-yellow" style="left:0%;top:60%;width:6%;height:10%" data-tickets="0" data-interactions="11" data-outcome="63.60%" data-deflection="81.80%">
+          <span class="tm-label">Chemical</span>
+          <span class="tm-count">11 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:6%;top:60%;width:10%;height:10%" data-tickets="0" data-interactions="13" data-outcome="69.20%" data-deflection="84.60%">
+          <span class="tm-label">Okta and...</span>
+          <span class="tm-count">13 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:28%;top:60%;width:22%;height:16%" data-tickets="0" data-interactions="214" data-outcome="61.61%" data-deflection="87.85%">
+          <span class="tm-label">Weather and General Information Queries</span>
+          <span class="tm-count">214 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:50%;top:60%;width:18%;height:16%" data-tickets="3" data-interactions="83" data-outcome="50.60%" data-deflection="75.90%">
+          <span class="tm-label">Access and Login Issues A...</span>
+          <span class="tm-count">83 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:68%;top:60%;width:8%;height:16%" data-tickets="1" data-interactions="19" data-outcome="42.10%" data-deflection="63.20%">
+          <span class="tm-label">Empl...</span>
+          <span class="tm-count">19 <span style="color:red;">&#9632;</span></span>
+        </div>
+
+        <div class="tm-cell bg-red" style="left:76%;top:54%;width:10%;height:10%" data-tickets="2" data-interactions="15" data-outcome="20.00%" data-deflection="33.30%">
+          <span class="tm-label">O... Ownership of eHe...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:86%;top:54%;width:14%;height:10%" data-tickets="1" data-interactions="9" data-outcome="22.20%" data-deflection="44.40%">
+          <span class="tm-label">Purcha...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:76%;top:64%;width:12%;height:12%" data-tickets="2" data-interactions="58" data-outcome="37.90%" data-deflection="55.20%">
+          <span class="tm-label">Adobe Software Acce...</span>
+          <span class="tm-count">58 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-red" style="left:88%;top:64%;width:12%;height:12%" data-tickets="1" data-interactions="21" data-outcome="38.10%" data-deflection="52.40%">
+          <span class="tm-label">Cisco R...</span>
+          <span class="tm-count">21 &#9745;</span>
+        </div>
+
+        <!-- Row 5 (bottom) -->
+        <div class="tm-cell bg-yellow" style="left:0%;top:70%;width:5%;height:10%" data-tickets="0" data-interactions="37" data-outcome="64.90%" data-deflection="89.20%">
+          <span class="tm-label">Ticket Status Inquiry</span>
+          <span class="tm-count">37 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:5%;top:70%;width:8%;height:10%" data-tickets="0" data-interactions="29" data-outcome="58.60%" data-deflection="82.80%">
+          <span class="tm-label">Ticket Status and Updat...</span>
+          <span class="tm-count">29 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:13%;top:70%;width:7%;height:10%" data-tickets="0" data-interactions="29" data-outcome="79.30%" data-deflection="96.60%">
+          <span class="tm-label">Greeting...</span>
+          <span class="tm-count">29 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:20%;top:70%;width:10%;height:10%" data-tickets="1" data-interactions="103" data-outcome="55.30%" data-deflection="83.50%">
+          <span class="tm-label">VPN Connectivi...</span>
+          <span class="tm-count">103 &#9745;</span>
+        </div>
+
+        <div class="tm-cell bg-yellow" style="left:0%;top:80%;width:5%;height:10%" data-tickets="0" data-interactions="29" data-outcome="62.10%" data-deflection="86.20%">
+          <span class="tm-label">Requests for New Keybo...</span>
+          <span class="tm-count">29 &#9745;</span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:5%;top:80%;width:8%;height:10%" data-tickets="0" data-interactions="11" data-outcome="54.50%" data-deflection="72.70%">
+          <span class="tm-label">Wifi Connecti...</span>
+          <span class="tm-count">11 &#9745;</span>
+        </div>
+
+        <div class="tm-cell bg-yellow" style="left:28%;top:76%;width:12%;height:14%" data-tickets="0" data-interactions="45" data-outcome="71.10%" data-deflection="91.10%">
+          <span class="tm-label">Employee 401k Policy Informa...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:40%;top:76%;width:6%;height:14%" data-tickets="0" data-interactions="18" data-outcome="66.70%" data-deflection="88.90%">
+          <span class="tm-label">Paid Ti...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:46%;top:76%;width:10%;height:14%" data-tickets="1" data-interactions="24" data-outcome="54.20%" data-deflection="79.20%">
+          <span class="tm-label">Laptop and Monit...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:56%;top:76%;width:8%;height:14%" data-tickets="0" data-interactions="16" data-outcome="75.00%" data-deflection="93.80%">
+          <span class="tm-label">Pizza Preferences</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:64%;top:76%;width:8%;height:14%" data-tickets="1" data-interactions="20" data-outcome="50.00%" data-deflection="70.00%">
+          <span class="tm-label">Laptop Rep...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-yellow" style="left:72%;top:76%;width:6%;height:14%" data-tickets="0" data-interactions="14" data-outcome="57.10%" data-deflection="78.60%">
+          <span class="tm-label">Language Pre...</span>
+          <span class="tm-count"></span>
+        </div>
+
+        <div class="tm-cell bg-red" style="left:78%;top:76%;width:10%;height:14%" data-tickets="3" data-interactions="25" data-outcome="28.00%" data-deflection="44.00%">
+          <span class="tm-label">Micros...</span>
+          <span class="tm-count"></span>
+        </div>
+        <div class="tm-cell bg-red" style="left:88%;top:76%;width:12%;height:14%" data-tickets="2" data-interactions="30" data-outcome="23.30%" data-deflection="40.00%">
+          <span class="tm-label">Atos Onecontact Fund...</span>
+          <span class="tm-count"></span>
+        </div>
+
+        <!-- Tooltip mock -->
+        <div class="tooltip-mock" style="left:62%;top:8%;">
+          <strong>Google Drive Folder Management</strong>
+          Interactions: 41
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#e06060;"></span>
+          Subpar, interactions have too many tickets, poor feedback, or missing content
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#e8b829;"></span>
+          Average, lacking feedback, neutral sentiment, potentially some tickets
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#6dbf6d;"></span>
+          Good, evidence of good sentiment, feedback and quality answers
+        </div>
+        <div class="icon-legend" style="margin-top:8px;">
+          <span>&#9745;</span> We estimate that the existing KBs can potentially provide enough answers for this topic cluster
+        </div>
+        <div class="icon-legend">
+          <span style="color:red;">&#9632;</span> We estimate that the existing KBs can not potentially provide enough answers for this topic cluster
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchView(view) {
+      document.getElementById('tableView').style.display = view === 'table' ? 'block' : 'none';
+      document.getElementById('chartView').style.display = view === 'chart' ? 'block' : 'none';
+      document.querySelectorAll('.view-tab').forEach(function(tab) {
+        tab.classList.toggle('active', tab.dataset.view === view);
+      });
+    }
+
+    // Treemap cell click → update metrics
+    document.querySelectorAll('.tm-cell').forEach(function(cell) {
+      cell.addEventListener('click', function() {
+        // Highlight selected cell
+        document.querySelectorAll('.tm-cell').forEach(function(c) { c.classList.remove('selected'); });
+        cell.classList.add('selected');
+
+        // Get the label name for context
+        var label = cell.querySelector('.tm-label');
+        var name = label ? label.textContent.trim() : '';
+
+        // Update stat cards
+        document.getElementById('stat-tickets').textContent = cell.dataset.tickets;
+        document.getElementById('stat-interactions').textContent = cell.dataset.interactions;
+        document.getElementById('stat-outcome').textContent = cell.dataset.outcome;
+        document.getElementById('stat-deflection').textContent = cell.dataset.deflection;
+        document.getElementById('stat-context').textContent = name || 'Selected cluster';
+      });
+    });
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>

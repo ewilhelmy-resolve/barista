@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Settings - Wireframe</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #222; display: flex; min-height: 100vh; }
+
+    /* Top bar */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 48px; background: #fff;
+      border-bottom: 1px solid #e0e0e0; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 20px; z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar-logo { width: 28px; height: 28px; background: #222; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .topbar-logo svg { color: #fff; }
+    .topbar-title { font-size: 15px; font-weight: 700; }
+    .topbar-avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: #4a7c59; color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; top: 48px; left: 0; bottom: 0; width: 220px;
+      background: #fafafa; border-right: 1px solid #e0e0e0; padding: 16px 0;
+      overflow-y: auto;
+    }
+    .sidebar a {
+      display: flex; align-items: center; gap: 10px; padding: 9px 20px;
+      font-size: 13px; color: #444; text-decoration: none; font-weight: 500;
+    }
+    .sidebar a:hover { background: #f0f0f0; }
+    .sidebar a.active { color: #222; font-weight: 700; background: #eee; }
+    .sidebar a svg { flex-shrink: 0; }
+    .sidebar .nav-group { margin-bottom: 4px; }
+    .sidebar .nav-item-with-plus { display: flex; align-items: center; justify-content: space-between; padding-right: 16px; }
+    .sidebar .nav-item-with-plus a { flex: 1; }
+    .sidebar .plus-btn {
+      width: 22px; height: 22px; border: none; background: none; cursor: pointer;
+      color: #888; font-size: 16px; display: flex; align-items: center; justify-content: center; border-radius: 4px;
+    }
+    .sidebar .plus-btn:hover { background: #e0e0e0; color: #222; }
+
+    /* Main content */
+    .main { margin-left: 220px; margin-top: 48px; padding: 32px 40px; flex: 1; }
+
+    /* Settings page */
+    .page-title { font-size: 26px; font-weight: 700; margin-bottom: 24px; }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 32px; gap: 0; }
+    .tab {
+      padding: 10px 20px; font-size: 14px; font-weight: 600; color: #666;
+      cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; white-space: nowrap;
+    }
+    .tab:hover { color: #222; }
+    .tab.active { color: #222; border-bottom-color: #222; }
+
+    /* Tab content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Two-column layout for branding */
+    .branding-layout { display: flex; gap: 48px; }
+    .branding-form { flex: 1; max-width: 560px; }
+    .branding-preview { flex: 1; max-width: 480px; }
+
+    /* Section */
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0; }
+    .field { margin-bottom: 24px; }
+    .field-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .field-hint { font-size: 12px; color: #777; margin-top: 4px; line-height: 1.4; }
+    .field input[type="text"] {
+      width: 100%; padding: 9px 12px; font-size: 14px;
+      border: 1.5px solid #ccc; border-radius: 4px; background: #fff;
+    }
+    .field input[type="text"]:focus { outline: none; border-color: #888; }
+
+    /* File upload */
+    .file-upload {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .file-upload .file-icon {
+      width: 36px; height: 36px; background: #e8e8e8; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center; color: #888;
+    }
+    .file-upload .file-name { font-size: 13px; color: #444; }
+    .file-upload .file-input-mock {
+      flex: 1; padding: 9px 12px; font-size: 13px; color: #999;
+      border: 1.5px solid #ccc; border-radius: 4px; background: #fff;
+    }
+    .file-upload .delete-btn {
+      width: 30px; height: 30px; background: #e74c3c; color: #fff; border: none;
+      border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .file-upload .delete-btn:hover { background: #c0392b; }
+
+    /* Color field */
+    .color-field { display: flex; align-items: center; gap: 10px; }
+    .color-swatch {
+      width: 32px; height: 32px; border: 1.5px solid #ccc; border-radius: 4px; flex-shrink: 0;
+    }
+    .color-field input { flex: 1; }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; }
+    .checkbox-row label { font-size: 13px; color: #444; }
+
+    /* Preview cards */
+    .preview-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+    .preview-card {
+      border: 1.5px solid #ddd; border-radius: 8px; overflow: hidden; margin-bottom: 24px;
+      background: #fafafa;
+    }
+    .preview-login {
+      height: 220px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 12px; padding: 24px;
+    }
+    .preview-login .logo-text { font-size: 28px; font-weight: 900; letter-spacing: 2px; }
+    .preview-login .mock-input {
+      width: 180px; height: 28px; border: 1px solid #ccc; border-radius: 4px; background: #fff;
+    }
+    .preview-app-header {
+      height: 40px; background: #222; display: flex; align-items: center; padding: 0 16px;
+    }
+    .preview-app-header .logo-text { color: #fff; font-size: 16px; font-weight: 900; letter-spacing: 1px; }
+    .preview-app-body {
+      height: 200px; display: flex; gap: 0;
+    }
+    .preview-app-sidebar { width: 80px; background: #f0f0f0; border-right: 1px solid #ddd; }
+    .preview-app-main { flex: 1; padding: 16px; }
+    .preview-app-main .mock-block {
+      width: 70%; height: 20px; background: #e0e0e0; border-radius: 3px; margin-bottom: 8px;
+    }
+    .preview-app-main .mock-btn {
+      width: 60px; height: 22px; background: #ddd; border: 1px solid #ccc; border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo"><i data-lucide="bot" style="width:18px;height:18px;color:#fff;"></i></div>
+      <span class="topbar-title">Global Settings</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="topbar-avatar">EW</div>
+      <i data-lucide="chevron-down" style="width:14px;height:14px;color:#666;cursor:pointer;"></i>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="nav-group">
+      <a href="#"><i data-lucide="message-square" style="width:16px;height:16px;"></i> Interactions</a>
+      <a href="#"><i data-lucide="help-circle" style="width:16px;height:16px;"></i> FAQs</a>
+      <a href="#"><i data-lucide="file-text" style="width:16px;height:16px;"></i> Knowledge Articles</a>
+    </div>
+    <div class="nav-item-with-plus">
+      <a href="#"><i data-lucide="ticket" style="width:16px;height:16px;"></i> Tickets</a>
+      <button class="plus-btn">+</button>
+    </div>
+    <div class="nav-group">
+      <a href="#"><i data-lucide="book-open" style="width:16px;height:16px;"></i> Reference Catalog</a>
+      <a href="#"><i data-lucide="layout" style="width:16px;height:16px;"></i> Storefront Designer</a>
+      <a href="#"><i data-lucide="package" style="width:16px;height:16px;"></i> Bundles</a>
+      <a href="#"><i data-lucide="shield" style="width:16px;height:16px;"></i> Role Bundles</a>
+      <a href="#"><i data-lucide="list" style="width:16px;height:16px;"></i> Onboarding</a>
+      <a href="#"><i data-lucide="briefcase" style="width:16px;height:16px;"></i> Service Department</a>
+      <a href="#"><i data-lucide="users" style="width:16px;height:16px;"></i> Service Teams</a>
+    </div>
+    <div class="nav-item-with-plus">
+      <a href="#"><i data-lucide="user" style="width:16px;height:16px;"></i> Users</a>
+      <button class="plus-btn">+</button>
+    </div>
+    <div class="nav-group" style="margin-top:8px; padding-top:8px; border-top:1px solid #e0e0e0;">
+      <a href="#"><i data-lucide="plug" style="width:16px;height:16px;"></i> Integration Hub</a>
+      <a href="#"><i data-lucide="lock" style="width:16px;height:16px;"></i> Authentication</a>
+      <a href="#"><i data-lucide="bar-chart-2" style="width:16px;height:16px;"></i> Reports</a>
+      <a href="#"><i data-lucide="map-pin" style="width:16px;height:16px;"></i> Locations</a>
+      <a href="#" class="active"><i data-lucide="settings" style="width:16px;height:16px;"></i> Global Settings</a>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <h1 class="page-title">Settings</h1>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="branding" onclick="switchTab('branding')">Branding</button>
+      <button class="tab" data-tab="notifications" onclick="switchTab('notifications')">Notifications</button>
+      <button class="tab" data-tab="link-metadata" onclick="switchTab('link-metadata')">Link Metadata</button>
+      <button class="tab" data-tab="email-policy" onclick="switchTab('email-policy')">Email Policy</button>
+      <button class="tab" data-tab="customization" onclick="switchTab('customization')">Customization</button>
+      <button class="tab" data-tab="files" onclick="switchTab('files')">Files</button>
+      <button class="tab" data-tab="help" onclick="switchTab('help')">Help</button>
+      <button class="tab" data-tab="elc" onclick="switchTab('elc')">ELC</button>
+      <button class="tab" data-tab="messages" onclick="switchTab('messages')">Messages</button>
+    </div>
+
+    <!-- Branding tab -->
+    <div class="tab-content active" id="tab-branding">
+      <div class="branding-layout">
+        <div class="branding-form">
+          <h2 class="section-title">Application Identity &amp; Branding</h2>
+
+          <div class="field">
+            <div class="field-label">Name</div>
+            <input type="text" value="yanatest">
+            <div class="field-hint">Name will show up in workflows, transactional emails, and SMS messages.</div>
+          </div>
+
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Images</h3>
+
+          <div class="field">
+            <div class="field-label">Application Logo</div>
+            <div class="file-upload">
+              <span class="file-name">Resolve-Logo-Full-Color-PMS-Values-CMYK.png</span>
+              <button class="delete-btn"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+            </div>
+            <div class="field-hint">Logo is used for branding across the whole application.</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Log In Page Logo (Optional)</div>
+            <div class="file-upload">
+              <div class="file-icon"><i data-lucide="folder" style="width:16px;height:16px;"></i></div>
+              <span class="file-input-mock">Select a file...</span>
+            </div>
+            <div class="field-hint">Log in page logo is used to define an image to display on the login screen or in workflows whenever an image background is present. It is not required.</div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Background Image (Optional)</div>
+            <div class="file-upload">
+              <div class="file-icon"><i data-lucide="folder" style="width:16px;height:16px;"></i></div>
+              <span class="file-input-mock">Select a file...</span>
+            </div>
+            <div class="field-hint">Background image will show on all login and onboard workflow pages when a user is outside of the main application.</div>
+          </div>
+
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Colors</h3>
+
+          <div class="field">
+            <div class="field-label">Primary Color</div>
+            <div class="color-field">
+              <div class="color-swatch" style="background:#FFFFFF;"></div>
+              <input type="text" value="#FFFFFF">
+            </div>
+            <div class="field-hint">Primary color will be applied throughout the user interface.</div>
+          </div>
+
+          <div class="field">
+            <div class="checkbox-row">
+              <input type="checkbox" id="customHeader" checked>
+              <label for="customHeader">Customize Header Color</label>
+            </div>
+            <div class="color-field">
+              <div class="color-swatch" style="background:#000000;"></div>
+              <input type="text" value="#000000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview column -->
+        <div class="branding-preview">
+          <div class="preview-title">Login View</div>
+          <div class="preview-card">
+            <div class="preview-login">
+              <div class="logo-text">RESOLVE</div>
+              <div class="mock-input"></div>
+              <div class="mock-input"></div>
+              <div class="mock-input"></div>
+            </div>
+          </div>
+
+          <div class="preview-title">Application View</div>
+          <div class="preview-card">
+            <div class="preview-app-header">
+              <span class="logo-text">RESOLVE</span>
+            </div>
+            <div class="preview-app-body">
+              <div class="preview-app-sidebar"></div>
+              <div class="preview-app-main">
+                <div class="mock-block"></div>
+                <div class="mock-block" style="width:50%;"></div>
+                <div class="mock-btn"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-title">Application View (Modern Barista)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Placeholder tabs -->
+    <div class="tab-content" id="tab-notifications">
+      <h2 class="section-title">Notifications</h2>
+      <p style="color:#888;font-size:14px;">Notification settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-link-metadata">
+      <h2 class="section-title">Link Metadata</h2>
+      <p style="color:#888;font-size:14px;">Link metadata settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-email-policy">
+      <h2 class="section-title">Email Policy</h2>
+      <p style="color:#888;font-size:14px;">Email policy settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-customization">
+      <h2 class="section-title">Customization</h2>
+      <p style="color:#888;font-size:14px;">Customization settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-files">
+      <h2 class="section-title">Files</h2>
+      <p style="color:#888;font-size:14px;">File settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-help">
+      <h2 class="section-title">Help</h2>
+      <p style="color:#888;font-size:14px;">Help settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-elc">
+      <h2 class="section-title">ELC</h2>
+      <p style="color:#888;font-size:14px;">ELC settings will appear here.</p>
+    </div>
+    <div class="tab-content" id="tab-messages">
+      <h2 class="section-title">Messages</h2>
+      <p style="color:#888;font-size:14px;">Message settings will appear here.</p>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.tab-content').forEach(function(c) {
+        c.classList.toggle('active', c.id === 'tab-' + tabId);
+      });
+    }
+
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>
