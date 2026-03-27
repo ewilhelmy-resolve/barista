@@ -17,7 +17,7 @@
   left: 0;
   bottom: 0;
   width: 220px;
-  background: #fafafa;
+  background: #fff;
   border-right: 1px solid #e0e0e0;
   overflow-y: auto;
   z-index: 99;
@@ -36,10 +36,10 @@
   border-radius: 0 !important;
 }
 .sidebar-nav.ui.menu .item.sidebar-item:hover {
-  background: #f0f0f0;
+  background: #f5f5f5;
 }
 .sidebar-nav.ui.menu .item.sidebar-item.active {
-  background: #eee;
+  background: #ececec;
   font-weight: 700;
   color: #222;
 }
