@@ -4,22 +4,24 @@ import './AppLayout.css'
 
 const navItems = [
   { to: '#', icon: 'comments', label: 'Interactions' },
-  { to: '#', icon: 'help circle', label: 'FAQs' },
+  { to: '/cluster-dashboard', icon: 'th', label: 'Cluster Dashboard' },
+  { to: '#', icon: 'edit', label: 'FAQs' },
   { to: '#', icon: 'file text', label: 'Knowledge Articles' },
-  { to: '#', icon: 'ticket', label: 'Tickets', hasPlus: true },
-  { to: '#', icon: 'book', label: 'Reference Catalog' },
-  { to: '#', icon: 'paint brush', label: 'Storefront Designer' },
-  { to: '#', icon: 'box', label: 'Bundles' },
-  { to: '#', icon: 'shield', label: 'Role Bundles' },
-  { to: '#', icon: 'list', label: 'Onboarding' },
-  { to: '#', icon: 'building', label: 'Service Department' },
-  { to: '#', icon: 'users', label: 'Service Teams' },
-  { to: '#', icon: 'user', label: 'Users', hasPlus: true },
+  { to: '#', icon: 'sitemap', label: 'Agentic Workflow Builder' },
+  { to: '#', icon: 'check square', label: 'Tickets', hasPlus: true },
+  { to: '#', icon: 'globe', label: 'Reference Catalog' },
+  { to: '#', icon: 'shopping cart', label: 'Storefront Designer' },
+  { to: '#', icon: 'cubes', label: 'Bundles' },
+  { to: '#', icon: 'clipboard list', label: 'Role Bundles' },
+  { to: '#', icon: 'tasks', label: 'Workflows', hasPlus: true },
+  { to: '#', icon: 'wrench', label: 'Service Department' },
+  { to: '#', icon: 'id badge', label: 'Service Teams' },
+  { to: '#', icon: 'user outline', label: 'Users', hasPlus: true },
   { divider: true },
-  { to: '#', icon: 'plug', label: 'Integration Hub' },
-  { to: '#', icon: 'lock', label: 'Authentication' },
+  { to: '#', icon: 'cloud', label: 'Integration Hub' },
+  { to: '#', icon: 'address card', label: 'Authentication' },
   { to: '#', icon: 'chart bar', label: 'Reports' },
-  { to: '#', icon: 'map marker alternate', label: 'Locations' },
+  { to: '#', icon: 'globe', label: 'Locations' },
   { to: '/global-settings', icon: 'setting', label: 'Global Settings' },
 ]
 
@@ -48,7 +50,7 @@ export default function AppLayout() {
         <Menu vertical fluid borderless className="sidebar-nav">
           {navItems.map((item, i) => {
             if (item.divider) return <div key={i} className="nav-divider" />
-            const isActive = item.to !== '#' && location.pathname === item.to
+            const isActive = item.to !== '#' && location.pathname.startsWith(item.to)
             return (
               <Menu.Item
                 key={i}
