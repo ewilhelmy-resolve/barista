@@ -127,18 +127,22 @@ function BrandingTab() {
 
             <Form.Field>
               <label>Login Page Logo <span className="optional-tag">(Optional)</span></label>
-              <Button basic icon labelPosition="left" fluid className="file-select-btn">
-                <Icon name="folder" />
-                Select a file...
-              </Button>
+              <Input
+                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                placeholder="Select a file..."
+                readOnly
+                fluid
+              />
             </Form.Field>
 
             <Form.Field>
               <label>Background Image <span className="optional-tag">(Optional)</span></label>
-              <Button basic icon labelPosition="left" fluid className="file-select-btn">
-                <Icon name="folder" />
-                Select a file...
-              </Button>
+              <Input
+                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                placeholder="Select a file..."
+                readOnly
+                fluid
+              />
             </Form.Field>
           </Form>
         </Segment>
@@ -293,18 +297,22 @@ function BrandingTab() {
 
             <Form.Field>
               <label>Widget Icon <span className="optional-tag">(PNG)</span></label>
-              <Button basic icon labelPosition="left" fluid className="file-select-btn">
-                <Icon name="folder" />
-                Select a file...
-              </Button>
+              <Input
+                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                placeholder="Select a file..."
+                readOnly
+                fluid
+              />
             </Form.Field>
 
             <Form.Field>
               <label>Favicon</label>
-              <Button basic icon labelPosition="left" fluid className="file-select-btn">
-                <Icon name="folder" />
-                Select a file...
-              </Button>
+              <Input
+                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                placeholder="Select a file..."
+                readOnly
+                fluid
+              />
             </Form.Field>
           </Form>
         </Segment>
