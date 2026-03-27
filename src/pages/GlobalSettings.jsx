@@ -123,7 +123,7 @@ function BrandingTab() {
             <Form.Field>
               <label>Login Page Logo <span className="optional-tag">(Optional)</span></label>
               <Input
-                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
                 placeholder="Select a file..."
                 readOnly
                 fluid
@@ -133,7 +133,7 @@ function BrandingTab() {
             <Form.Field>
               <label>Background Image <span className="optional-tag">(Optional)</span></label>
               <Input
-                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
                 placeholder="Select a file..."
                 readOnly
                 fluid
@@ -278,7 +278,7 @@ function BrandingTab() {
             <Form.Field>
               <label>Widget Icon <span className="optional-tag">(PNG)</span></label>
               <Input
-                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
                 placeholder="Select a file..."
                 readOnly
                 fluid
@@ -288,7 +288,7 @@ function BrandingTab() {
             <Form.Field>
               <label>Favicon</label>
               <Input
-                action={{ icon: 'folder', content: 'Browse', labelPosition: 'left', basic: true }}
+                action={<Button basic icon labelPosition="left"><Icon name="folder" />Browse</Button>}
                 placeholder="Select a file..."
                 readOnly
                 fluid
