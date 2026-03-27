@@ -98,12 +98,7 @@ function BrandingTab() {
 
         {/* Section 1: Identity */}
         <Segment>
-          <Header as="h3" dividing>
-            <Icon name="id badge" />
-            <Header.Content>
-              Application Identity
-            </Header.Content>
-          </Header>
+          <Header as="h3" dividing>Application Identity</Header>
 
           <Form>
             <Form.Field required>
@@ -149,12 +144,7 @@ function BrandingTab() {
 
         {/* Section 2: Colors */}
         <Segment>
-          <Header as="h3" dividing>
-            <Icon name="paint brush" />
-            <Header.Content>
-              Colors
-            </Header.Content>
-          </Header>
+          <Header as="h3" dividing>Colors</Header>
 
           <Form>
             <Form.Field>
@@ -204,12 +194,7 @@ function BrandingTab() {
 
         {/* Section 3: Modern Barista Theme */}
         <Segment>
-          <Header as="h3" dividing>
-            <Icon name="theme" />
-            <Header.Content>
-              Modern Barista Theme
-            </Header.Content>
-          </Header>
+          <Header as="h3" dividing>Modern Barista Theme</Header>
 
           <Form>
             <Form.Field>
@@ -251,12 +236,7 @@ function BrandingTab() {
 
         {/* Section 4: Bot Identity & Branding */}
         <Segment>
-          <Header as="h3" dividing>
-            <Icon name="robot" />
-            <Header.Content>
-              Bot Identity &amp; Branding
-            </Header.Content>
-          </Header>
+          <Header as="h3" dividing>Bot Identity &amp; Branding</Header>
 
           <Message info size="small">
             <Icon name="info circle" />
