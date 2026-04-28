@@ -19,11 +19,57 @@
 
 /* Controls row */
 .controls-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.controls-row .search-input { margin-left: auto; min-width: 280px; }
 .clear-link {
   font-size: 13px; font-weight: 600; color: #555; cursor: pointer;
   text-decoration: underline; background: none; border: none; padding: 8px 4px;
 }
 .clear-link:hover { color: #222; }
+
+/* Filter panel */
+.filter-panel { margin-bottom: 20px; border: 1px solid #d0d0d0; background: #fff; }
+.filter-panel-header {
+  padding: 10px 16px; font-size: 14px; font-weight: 700;
+  border-bottom: 1px solid #e6e6e6; color: #111;
+}
+.filter-body { padding: 16px; position: relative; }
+
+.filter-rules { display: flex; flex-direction: column; gap: 8px; }
+.filter-rule-row { display: flex; gap: 8px; align-items: center; }
+.filter-rule-row .rule-field.ui.dropdown { min-width: 220px; }
+.filter-rule-row .rule-operator.ui.dropdown { min-width: 200px; }
+.filter-rule-row .rule-value.ui.input { flex: 1; }
+
+.filter-actions {
+  display: flex; align-items: center; gap: 16px;
+  justify-content: flex-end; margin-top: 12px;
+}
+.apply-link {
+  background: none; border: none; cursor: pointer;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  color: #555; padding: 8px 4px;
+}
+.apply-link:hover { color: #111; }
+
+/* Applied filter chips */
+.applied-filters {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin-bottom: 16px;
+}
+.applied-label { font-size: 13px; font-weight: 600; color: #555; }
+.filter-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; background: #f0f0f0; border: 1px solid #d0d0d0;
+  border-radius: 14px; font-size: 12px; color: #222;
+}
+.filter-chip .icon { cursor: pointer; margin: 0 0 0 2px !important; opacity: 0.6; }
+.filter-chip .icon:hover { opacity: 1; }
+.applied-clear {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: #555;
+  text-decoration: underline; padding: 4px;
+}
+.applied-clear:hover { color: #111; }
 
 /* Pagination */
 .pagination-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
@@ -45,6 +91,8 @@
 }
 .tm-cell:hover { opacity: 0.85; }
 .tm-cell.selected { outline: 3px solid #222; outline-offset: -3px; opacity: 1; }
+.tm-cell.dimmed { opacity: 0.18; }
+.tm-cell.dimmed:hover { opacity: 0.35; }
 .tm-label { font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tm-count { font-weight: 700; font-size: 14px; margin-top: 2px; }
 .bg-yellow { background: #e8b829; }

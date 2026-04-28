@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Statistic, Table, Select, Menu, Icon, Popup, Header, Dropdown } from 'semantic-ui-react'
+import { Button, Statistic, Table, Select, Menu, Icon, Popup, Header, Dropdown, Input } from 'semantic-ui-react'
 import './ClusterDashboard.css'
 
 const treemapCells = [
@@ -73,10 +73,110 @@ const perPageOptions = [
   { key: 100, value: 100, text: '100' },
 ]
 
+const filterFieldOptions = [
+  { key: 'text', value: 'text', text: 'Interaction Text' },
+  { key: 'translated', value: 'translated', text: 'Translated Interaction Text' },
+  { key: 'deflected', value: 'deflected', text: 'Deflected' },
+  { key: 'outcome', value: 'outcome', text: 'Outcome' },
+  { key: 'automation', value: 'automation', text: 'Automation Status' },
+  { key: 'noResponse', value: 'noResponse', text: 'No Response' },
+]
+
+const operatorsByField = {
+  text: ['contains', 'does not contain', 'equals', 'is empty', 'is not empty'],
+  translated: ['contains', 'does not contain', 'equals', 'is empty', 'is not empty'],
+  deflected: ['is true', 'is false'],
+  outcome: ['equals', 'greater than', 'less than', 'between'],
+  automation: ['equals', 'not equals'],
+  noResponse: ['is true', 'is false'],
+}
+
+const operatorOptions = (field) =>
+  (operatorsByField[field] || []).map((op) => ({ key: op, value: op, text: op }))
+
+const operatorNeedsValue = (op) =>
+  !['is empty', 'is not empty', 'is true', 'is false'].includes(op)
+
+const fieldValue = (row, field) => {
+  switch (field) {
+    case 'text': return row.text
+    case 'translated': return row.translated
+    case 'deflected': return row.deflected
+    case 'outcome': return row.outcome
+    default: return ''
+  }
+}
+
+const ruleMatchesRow = (row, rule) => {
+  const v = fieldValue(row, rule.field)
+  const target = (rule.value ?? '').toString().toLowerCase()
+  switch (rule.operator) {
+    case 'contains': return (v || '').toString().toLowerCase().includes(target)
+    case 'does not contain': return !(v || '').toString().toLowerCase().includes(target)
+    case 'equals': return (v || '').toString().toLowerCase() === target
+    case 'not equals': return (v || '').toString().toLowerCase() !== target
+    case 'is empty': return !v && v !== 0 && v !== false
+    case 'is not empty': return !!v || v === 0 || v === false
+    case 'is true': return v === true
+    case 'is false': return v === false
+    case 'greater than': return Number(v) > Number(rule.value)
+    case 'less than': return Number(v) < Number(rule.value)
+    default: return true
+  }
+}
+
+const blankRule = () => ({ field: 'text', operator: 'contains', value: '' })
+
 export default function ClusterDashboard() {
   const [view, setView] = useState('table')
   const [stats, setStats] = useState(defaultStats)
   const [selectedCell, setSelectedCell] = useState(null)
+
+  const [search, setSearch] = useState('')
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [rules, setRules] = useState([blankRule()])
+  const [appliedRules, setAppliedRules] = useState([])
+
+  const query = search.trim().toLowerCase()
+  const matches = (text) => !query || (text || '').toLowerCase().includes(query)
+  const rowMatchesKeyword = (row) =>
+    !query || matches(row.text) || matches(row.translated)
+  const rowMatchesAdvanced = (row) =>
+    appliedRules.length === 0 || appliedRules.every((r) => ruleMatchesRow(row, r))
+  const visibleRows = tableRows.filter(
+    (row) => rowMatchesKeyword(row) && rowMatchesAdvanced(row),
+  )
+
+  const filterActive = appliedRules.length > 0
+
+  const updateRule = (i, patch) => {
+    setRules((prev) => prev.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
+  }
+  const addRule = () => setRules((prev) => [...prev, blankRule()])
+  const removeRule = (i) =>
+    setRules((prev) => (prev.length === 1 ? [blankRule()] : prev.filter((_, idx) => idx !== i)))
+
+  const applyFilters = () => {
+    setAppliedRules(rules.filter((r) => r.field && r.operator && (operatorNeedsValue(r.operator) ? r.value !== '' : true)))
+    setFilterOpen(false)
+  }
+  const clearFilters = () => {
+    setRules([blankRule()])
+    setAppliedRules([])
+  }
+  const removeAppliedRule = (idx) => {
+    setAppliedRules((prev) => prev.filter((_, i) => i !== idx))
+    setRules((prev) => {
+      const next = prev.filter((_, i) => i !== idx)
+      return next.length === 0 ? [blankRule()] : next
+    })
+  }
+
+  const fieldLabel = (f) => filterFieldOptions.find((o) => o.value === f)?.text || f
+  const ruleSummary = (r) =>
+    operatorNeedsValue(r.operator)
+      ? `${fieldLabel(r.field)} ${r.operator} "${r.value}"`
+      : `${fieldLabel(r.field)} ${r.operator}`
 
   const handleCellClick = (cell, index) => {
     setSelectedCell(index)
@@ -158,15 +258,101 @@ export default function ClusterDashboard() {
           inverted
         />
 
-        <button className="clear-link">Clear</button>
+        <Input
+          icon="search"
+          iconPosition="left"
+          placeholder={view === 'table' ? 'Search interactions…' : 'Search clusters…'}
+          value={search}
+          onChange={(_, { value }) => setSearch(value)}
+          className="search-input"
+        />
+
+        <Button
+          basic={!filterActive && !filterOpen}
+          color={filterActive ? 'black' : undefined}
+          icon
+          labelPosition="left"
+          onClick={() => setFilterOpen((v) => !v)}
+          className="filter-toggle"
+        >
+          <Icon name="filter" />
+          FILTER{filterActive ? ` (${appliedRules.length})` : ''}
+        </Button>
+
+        <button
+          className="clear-link"
+          onClick={() => { setSearch(''); clearFilters(); setSelectedCell(null); setStats(defaultStats); }}
+        >
+          Clear
+        </button>
       </div>
+
+      {/* Filter panel */}
+      {filterOpen && (
+        <div className="filter-panel">
+          <div className="filter-panel-header">Advanced Filtering{filterActive ? ' (Active)' : ''}</div>
+          <div className="filter-body">
+            <div className="filter-rules">
+              {rules.map((rule, i) => (
+                <div className="filter-rule-row" key={i}>
+                  <Dropdown
+                    selection
+                    placeholder="Field"
+                    options={filterFieldOptions}
+                    value={rule.field}
+                    onChange={(_, { value }) =>
+                      updateRule(i, { field: value, operator: operatorsByField[value]?.[0] || '', value: '' })
+                    }
+                    className="rule-field"
+                  />
+                  <Dropdown
+                    selection
+                    placeholder="operator"
+                    options={operatorOptions(rule.field)}
+                    value={rule.operator}
+                    onChange={(_, { value }) => updateRule(i, { operator: value })}
+                    className="rule-operator"
+                  />
+                  <Input
+                    placeholder="Value"
+                    value={rule.value}
+                    onChange={(_, { value }) => updateRule(i, { value })}
+                    disabled={!operatorNeedsValue(rule.operator)}
+                    className="rule-value"
+                  />
+                  <Button icon="plus" basic onClick={addRule} />
+                  <Button icon="minus" basic onClick={() => removeRule(i)} />
+                </div>
+              ))}
+            </div>
+
+            <div className="filter-actions">
+              <button className="apply-link" onClick={applyFilters}>APPLY</button>
+              <Button basic size="small" onClick={clearFilters}>CLEAR</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {appliedRules.length > 0 && (
+        <div className="applied-filters">
+          <span className="applied-label">Filtered by:</span>
+          {appliedRules.map((rule, i) => (
+            <span className="filter-chip" key={i}>
+              {ruleSummary(rule)}
+              <Icon name="close" onClick={() => removeAppliedRule(i)} />
+            </span>
+          ))}
+          <button className="applied-clear" onClick={clearFilters}>Clear all</button>
+        </div>
+      )}
 
       {/* Table view */}
       {view === 'table' && (
         <div className="table-view">
           <div className="pagination-row">
             <div className="pagination-left">
-              <strong className="record-count">4158 RECORDS</strong>
+              <strong className="record-count">{query ? `${visibleRows.length} OF 4158 RECORDS` : '4158 RECORDS'}</strong>
               <Dropdown compact selection options={perPageOptions} defaultValue={25} />
               <span className="per-page">per page (1-25)</span>
             </div>
@@ -189,7 +375,7 @@ export default function ClusterDashboard() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {tableRows.map((row, i) => (
+              {visibleRows.map((row, i) => (
                 <Table.Row key={i}>
                   <Table.Cell>{row.text}</Table.Cell>
                   <Table.Cell>{row.translated}</Table.Cell>
@@ -200,6 +386,13 @@ export default function ClusterDashboard() {
                   <Table.Cell></Table.Cell>
                 </Table.Row>
               ))}
+              {visibleRows.length === 0 && (
+                <Table.Row>
+                  <Table.Cell colSpan={5} textAlign="center" style={{ color: '#888', padding: '24px' }}>
+                    No interactions match the current filters
+                  </Table.Cell>
+                </Table.Row>
+              )}
             </Table.Body>
           </Table>
         </div>
@@ -212,7 +405,7 @@ export default function ClusterDashboard() {
             {treemapCells.map((cell, i) => (
               <div
                 key={i}
-                className={`tm-cell bg-${cell.color} ${selectedCell === i ? 'selected' : ''}`}
+                className={`tm-cell bg-${cell.color} ${selectedCell === i ? 'selected' : ''} ${query && !matches(cell.label) ? 'dimmed' : ''}`}
                 style={cell.pos}
                 onClick={() => handleCellClick(cell, i)}
               >
